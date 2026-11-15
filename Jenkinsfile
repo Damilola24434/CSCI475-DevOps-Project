@@ -5,13 +5,15 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo 'Checking out source code'
+                sh 'git branch --show-current'
+                sh 'ls -la'
             }
         }
 
         stage('Build and Test') {
             steps {
                 echo 'Building and testing the application'
-                bat 'mvn clean verify'
+                sh 'mvn clean verify'
             }
         }
 
