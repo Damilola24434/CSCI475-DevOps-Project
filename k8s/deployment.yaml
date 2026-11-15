@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: devops-demo
+  namespace: devops-demo
   labels:
     app: devops-demo
 spec:
@@ -16,7 +17,7 @@ spec:
     spec:
       containers:
         - name: devops-demo
-          image: YOUR_DOCKERHUB_USERNAME/devops-demo:1.0
+          image: dosoba24434/devops-demo:1.0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
