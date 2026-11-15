@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = 'dosoba24434/devops-demo:1.0'
+        KUBECONFIG = '/var/jenkins_home/kubeconfig'
     }
 
     stages {
@@ -34,6 +35,16 @@ pipeline {
                     sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
                     sh 'docker push $DOCKER_IMAGE'
                 }
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                sh 'kubectl apply -f k8s/deployment.yaml'
+                sh 'kubectl apply -f k8s/service.yaml'
+                sh 'kubectl rollout status deployment/devops-demo -n devops-demo'
+                sh 'kubectl get pods -n devops-demo'
+                sh 'kubectl get services -n devops-demo'
             }
         }
     }
