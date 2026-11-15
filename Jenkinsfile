@@ -1,31 +1,39 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_IMAGE = 'dosoba24434/devops-demo:1.0'
+    }
+
     stages {
         stage('Checkout') {
             steps {
-                echo 'Checking out source code'
-                sh 'git branch --show-current'
-                sh 'ls -la'
+                echo 'Source code checked out'
             }
         }
 
         stage('Build and Test') {
             steps {
-                echo 'Building and testing the application'
                 sh 'mvn clean verify'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                echo 'Building Docker image'
+                sh 'docker build -t $DOCKER_IMAGE .'
             }
         }
 
-        stage('Deploy to Kubernetes') {
+        stage('Push to Docker Hub') {
             steps {
-                echo 'Deploying application to Kubernetes'
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-credentials',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
+                    sh 'docker push $DOCKER_IMAGE'
+                }
             }
         }
     }
